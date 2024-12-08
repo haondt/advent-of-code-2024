@@ -12,7 +12,7 @@ def turn_right(direction):
 def p1():
     data = lib.read()
 
-    grid = lib.Grid([list(i) for i in data.split('\n')])
+    grid = lib.Gridv1([list(i) for i in data.split('\n')])
     pos = grid.find('^')
     assert pos is not None
     direction = (0, 1)
@@ -50,7 +50,7 @@ def p1():
 
 def p2():
     data = lib.read()
-    grid = lib.Grid([list(i) for i in data.split('\n')])
+    grid = lib.Gridv1([list(i) for i in data.split('\n')])
     start = grid.find('^')
     assert start is not None
     start_dir = (0, 1)
