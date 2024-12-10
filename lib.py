@@ -86,6 +86,11 @@ class Point:
             return False
         return other.x == self.x and other.y == self.y
 
+    def __neq__(self, other):
+        if not isinstance(other, Point):
+            return True
+        return other.x != self.x or other.y != self.y
+
     def integer_direction(self):
         gcd = math.gcd(self.x, self.y)
         if gcd == 1:
@@ -107,6 +112,10 @@ class Grid(Generic[T]):
     def from_size(cls, width: int, height: int, default_value: Callable[[], T]):
         return cls([[default_value() for _x in range(width)] for _y in range(height)])
 
+    @classmethod
+    def from_string(cls, input: str, caster: Callable[[str], T]):
+        return cls([[caster(j) for j in i] for i in input.split('\n')])
+
     def clone(self):
         return Grid([[cell for cell in row] for row in self._cells])
 
@@ -115,8 +124,11 @@ class Grid(Generic[T]):
             return self._cells[self._height - 1 - point.y][point.x]
         return None
 
-    def __getitem__(self, point: Point):
-        return self.cell(point)
+    def __getitem__(self, point: Point) -> T:
+        cell = self.cell(point)
+        if cell is None:
+            raise KeyError(f"Point {point} not inside grid")
+        return cell
 
     def __setitem__(self, point: Point, value: T):
         self._cells[self._height - 1 - point.y][point.x] = value 
