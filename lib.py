@@ -86,10 +86,8 @@ class Point:
             return False
         return other.x == self.x and other.y == self.y
 
-    def __neq__(self, other):
-        if not isinstance(other, Point):
-            return True
-        return other.x != self.x or other.y != self.y
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def integer_direction(self):
         gcd = math.gcd(self.x, self.y)
