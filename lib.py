@@ -3,6 +3,7 @@ from collections.abc import Callable
 from typing import TypeVar, Generic, Generator
 import math
 
+
 T = TypeVar('T')
 
 def read():
@@ -161,3 +162,20 @@ class Grid(Generic[T]):
         return None
 
 
+CARDINAL_DIRECTIONS = [
+    Point(1, 0),
+    Point(-1, 0),
+    Point(0, 1),
+    Point(0, -1)
+]
+
+ALL_DIRECTIONS = [
+    Point(1, 0),
+    Point(-1, 0),
+    Point(0, 1),
+    Point(0, -1),
+    Point(1, 1),
+    Point(-1, -1),
+    Point(-1, 1),
+    Point(1, -1)
+]
