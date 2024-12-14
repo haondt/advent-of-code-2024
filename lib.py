@@ -5,6 +5,7 @@ import math
 
 
 T = TypeVar('T')
+U = TypeVar('U')
 
 def read():
     lines = []
@@ -99,6 +100,12 @@ class Point:
     def __hash__(self):
         return self._hash
 
+    def __mul__(self, scalar: int) -> Point:
+        return Point(self.x * scalar, self.y * scalar)
+
+    def __rmul__(self, scalar: int) -> Point:
+        return self.__mul__(scalar)
+
 
 
 class Grid(Generic[T]):
@@ -117,6 +124,12 @@ class Grid(Generic[T]):
 
     def clone(self):
         return Grid([[cell for cell in row] for row in self._cells])
+
+    def convert(self, converter: Callable[[T], U]) -> Grid[U]:
+        return Grid([[converter(cell) for cell in row] for row in self._cells])
+
+    def invert_y(self):
+        return Grid([[cell for cell in row] for row in self._cells][::-1])
 
     def cell(self, point: Point) -> None | T:
         if self.has_cell(point):
