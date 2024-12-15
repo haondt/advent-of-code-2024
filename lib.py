@@ -114,6 +114,14 @@ class Grid(Generic[T]):
         self._height = len(cells)
         self._cells: list[list[T]] = cells
 
+    @property
+    def width(self):
+        return self._width
+
+    @property
+    def height(self):
+        return self._height
+
     @classmethod
     def from_size(cls, width: int, height: int, default_value: Callable[[], T]):
         return cls([[default_value() for _x in range(width)] for _y in range(height)])
