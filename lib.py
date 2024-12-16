@@ -1,6 +1,7 @@
 from __future__ import annotations
 from collections.abc import Callable
 from typing import TypeVar, Generic, Generator
+import heapq
 import math
 
 
@@ -106,8 +107,6 @@ class Point:
     def __rmul__(self, scalar: int) -> Point:
         return self.__mul__(scalar)
 
-
-
 class Grid(Generic[T]):
     def __init__(self, cells: list[list[T]]):
         self._width = len(cells[0])
@@ -171,16 +170,26 @@ class Grid(Generic[T]):
     def __repr__(self):
         return str(self)
 
+    def to_string(self, with_numbers = False):
+        if with_numbers:
+            rows = [f'{self._height -x - 1:3} ' + '   '.join([f'{cell}' for cell in row]) for x, row in enumerate(self._cells)]
+            s = '\n'.join(rows)
+            s += '\n    ' + ''.join([f'{i:<4}' for i in range(self._width)])
+            return s
+
+        return self.__str__()
+
     def has_cell(self, point: Point) -> bool:
         return point.y >= 0 and point.y < self._height and point.x >= 0 and point.x < self._width
 
-    def find(self, value: T) -> None | Point:
+    def find(self, value: T) -> Point:
         for y in range(self._height):
             for x in range(self._width):
                 point = Point(x, y)
                 if self.cell(point) == value:
                     return point
-        return None
+        raise KeyError(f"Could not find cell with value {value}")
+
 
 
 CARDINAL_DIRECTIONS = [
@@ -200,3 +209,27 @@ ALL_DIRECTIONS = [
     Point(-1, 1),
     Point(1, -1)
 ]
+
+
+class Heap():
+    def __init__(self, initial = []):
+        self._heap = initial
+        heapq.heapify(self._heap)
+
+    def peek(self):
+        if len(self._heap) == 0:
+            return None
+        return self._heap[0]
+
+    def __len__(self):
+        return len(self._heap)
+
+    def pop(self):
+        return heapq.heappop(self._heap)
+
+    def push(self, value):
+        return heapq.heappush(self._heap, value)
+
+
+
+
