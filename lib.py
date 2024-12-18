@@ -230,6 +230,75 @@ class Heap():
     def push(self, value):
         return heapq.heappush(self._heap, value)
 
+class DijkstraNode(Generic[T]):
+    def __init__(self, value: T, distance: int | None = None):
+        self.distance: int | None = distance
+        self.closest_neighbours: dict[T, DijkstraNode[T]] = {}
+        self.is_visited = False
+        self.value = value
+
+    def __lt__(self, other: DijkstraNode):
+        assert self.distance != None
+        assert other.distance != None
+        return self.distance < other.distance
+
+    def __eq__(self, other):
+        if not isinstance(other, DijkstraNode):
+            return False
+        return self.value == other.value
+
+    def __hash__(self):
+        return hash(self.value)
+
+    def __repr__(self):
+        return f'DijkstraNode({self.value}, {self.distance})'
+
+class Dijkstra(Generic[T]):
+    def __init__(self, 
+        start: T,
+        end: T,
+        get_neighbours: Callable[[T], list[tuple[T, int]]]):
+        self._start = DijkstraNode(start, 0)
+        self._end = DijkstraNode(end)
+        self._get_neighbours = get_neighbours
+
+    def search(self, terminate_early: bool = False):
+        todo_heap = Heap([self._start])
+        todo_set: set[DijkstraNode] = set([self._start])
+        map: dict[T, DijkstraNode[T]] = { self._start.value: self._start }
+
+        while len(todo_heap) != 0:
+            current = todo_heap.pop()
+            todo_set.remove(current)
+            assert current.distance is not None
+
+            if current == self._end:
+                if terminate_early:
+                    return map
+                continue
+
+            for neighbour_value, distance in self._get_neighbours(current.value):
+                if neighbour_value not in map:
+                    map[neighbour_value] = DijkstraNode(neighbour_value)
+                neighbour = map[neighbour_value]
+
+                if neighbour.is_visited:
+                    continue
+
+                new_distance = distance + current.distance
+                if neighbour.distance is None or new_distance < neighbour.distance:
+                    neighbour.distance = new_distance
+                    neighbour.closest_neighbours = { current.value: current }
+
+                    if neighbour not in todo_set:
+                        todo_set.add(neighbour)
+                        todo_heap.push(neighbour)
+
+                elif neighbour.distance == new_distance:
+                    neighbour.closest_neighbours[current.value] = current
+
+            current.is_visited = True
+        return map
 
 
 
